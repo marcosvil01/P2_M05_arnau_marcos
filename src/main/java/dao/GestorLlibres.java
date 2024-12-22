@@ -55,4 +55,19 @@ public class GestorLlibres {
             stmt.executeUpdate();
         }
     }
+
+    // Obtenir l'ID d'un llibre pel seu nom
+    public int obtenirIdPerTitol(String titol) throws SQLException {
+        String query = "SELECT id FROM llibres WHERE titol = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, titol);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) { // Si es troba el llibre
+                    return rs.getInt("id");
+                }
+            }
+        }
+        return -1; // Retorna -1 si no existeix el llibre
+    }
+
 }

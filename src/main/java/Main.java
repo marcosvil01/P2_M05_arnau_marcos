@@ -46,7 +46,7 @@ public class Main {
     }
 
     // Exercici 2: Gestió de Productes
-    public static void executarExercici2() throws SQLException {
+    public static void executarExercici2() throws SQLException, IOException {
         System.out.println("\nExercici 2: Gestió de Productes");
 
         // Connexió específica per a productes
@@ -83,34 +83,42 @@ public class Main {
 
         // Afegir un autor
         Autor autor = new Autor(0, "Autor Exemple", "Espanya");
+        System.out.println("Afegint autor: " + autor.toString());
         gestorAutors.crearAutor(autor);
 
         // Afegir un llibre
         Llibre llibre = new Llibre(0, "Llibre Exemple", 2023);
+        System.out.println("Afegint llibre: " + llibre.toString());
         gestorLlibres.crearLlibre(llibre);
 
-        // Registrar un préstec
-        Prestec prestec = new Prestec(0, llibre.getId(), "Usuari Exemple", "2024-01-01", "2024-01-15");
+        // Obtenir l'ID del llibre pel seu títol utilitzant el gestor
+        int llibreId = gestorLlibres.obtenirIdPerTitol("Llibre Exemple");
+
+        // Registrar un préstec per el llibre
+        Prestec prestec = new Prestec(0, llibreId, "Usuari Exemple", "2024-01-01", "2024-01-15");
+        System.out.println("Afegint prestec: " + prestec.toString());
         gestorPrestecs.crearPrestec(prestec);
 
         // Mostrar autors
+        System.out.println("Llista d'autors: ");
         List<Autor> autors = gestorAutors.llegirAutors();
         for (Autor a : autors) {
             System.out.println(a);
         }
 
         // Mostrar llibres
+        System.out.println("Llista de llibres: ");
         List<Llibre> llibres = gestorLlibres.llegirLlibres();
         for (Llibre l : llibres) {
             System.out.println(l);
         }
 
         // Mostrar préstecs
+        System.out.println("Llista de prestecs: ");
         List<Prestec> prestecs = gestorPrestecs.llegirPrestecs();
         for (Prestec pr : prestecs) {
             System.out.println(pr);
         }
-
         conn.close();
     }
 }

@@ -1,10 +1,7 @@
 package utils;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,21 +14,38 @@ public class ConnexioDB_Biblioteca {
     private static final String DB_NAME = "biblioteca_db";
     private static final String USUARI = "root";
     private static final String CONTRASENYA = "";
-    private static final String URI_SQL_SCRIPT = "src/main/resources/SQL/estructura.sql";
+    private static final String URI_SQL_SCRIPT = "src/main/resources/SQL/Biblioteca.sql";
 
     // Mètode per establir la connexió
     public static Connection obtenirConnexio() throws SQLException, IOException {
-        // Crear la base de dades si no existeix
-        executarCreacioBaseDeDades();
+        // Check if the database exists
+        if (!baseDeDadesExisteix(DB_NAME)) {
+            // Create the database if it doesn't exist
+            crearBaseDeDades();
+        }
 
-        // Connectar-se a la base de dades
+        // Connect to the database
         String fullURL = URL + DB_NAME;
         Connection conn = DriverManager.getConnection(fullURL, USUARI, CONTRASENYA);
-        return conn; // Retorna la connexió
+        return conn; // Return the connection
     }
 
+    // Method to check if the database exists
+    public static boolean baseDeDadesExisteix(String nomBaseDades) throws SQLException {
+        String url = URL; // Connect without specifying a database
+        try (Connection conn = DriverManager.getConnection(url, USUARI, CONTRASENYA);
+             PreparedStatement stmt = conn.prepareStatement(
+                     "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?")) {
+            stmt.setString(1, nomBaseDades);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next(); // Returns true if the database exists
+            }
+        }
+    }
+
+
     // Crear la base de dades si no existeix
-    public static void executarCreacioBaseDeDades() throws SQLException, IOException {
+    public static void crearBaseDeDades() throws SQLException, IOException {
         System.out.println("\nExecutant creació de la base de dades...");
 
         // Connexió temporal per crear la base de dades

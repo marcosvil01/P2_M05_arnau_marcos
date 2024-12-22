@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 // Classe Llibre que representa un llibre amb id, titol i any de publicacio
 public class Llibre implements Serializable {
-    // Identificador unic del llibre
+    // Identificador unic del llibre (es autoincrement)
     private int id;
     // Titol del llibre
     private String titol;

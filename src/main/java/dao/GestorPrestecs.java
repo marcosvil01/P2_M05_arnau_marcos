@@ -14,8 +14,18 @@ public class GestorPrestecs {
         this.conn = conn;
     }
 
-    // Crear un nou préstec
     public void crearPrestec(Prestec prestec) throws SQLException {
+        // Comprovar si l'ID del llibre existeix
+        String checkQuery = "SELECT COUNT(*) FROM llibres WHERE id = ?";
+        try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
+            checkStmt.setInt(1, prestec.getLlibreId());
+            ResultSet rs = checkStmt.executeQuery();
+            if (rs.next() && rs.getInt(1) == 0) { // Si no hi ha coincidències
+                throw new SQLException("Llibre ID no existeix: " + prestec.getLlibreId());
+            }
+        }
+
+        // Inserir el préstec si l'ID del llibre és vàlid
         String query = "INSERT INTO prestecs (llibre_id, usuari, data_prestec, data_devolucio) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, prestec.getLlibreId());
@@ -25,6 +35,7 @@ public class GestorPrestecs {
             stmt.executeUpdate();
         }
     }
+
 
     // Llegir tots els préstecs
     public List<Prestec> llegirPrestecs() throws SQLException {
